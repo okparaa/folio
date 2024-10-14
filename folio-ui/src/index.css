@@ -1,0 +1,43 @@
+:root {
+  --color-primary: #5c6ac4;
+  --color-secondary: #ecc94b;
+  /* ... */
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bree";
+  src: local("BreeSerif-Regular"),
+    url("./fonts/BreeSerif-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Acme";
+  src: local("Acme-Regular"), url("./fonts/Acme-Regular.ttf") format("truetype");
+}
+html,
+body {
+  font-family: "Acme", serif;
+  font-weight: 400;
+  font-size: 17px;
+  box-sizing: border-box;
+  @apply bg-gradient-to-br from-blue-400 via-blue-100 to-white px-4;
+}
+.btn {
+  @apply bg-slate-800;
+}
+.text-fancy-color {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-black via-pink-700 to-black inline-block;
+}
+.bg-primary-color {
+  @apply bg-cyan-700;
+}
+.skills {
+  @apply flex flex-col items-center m-4 sm:my-0 w-[30px] text-xs md:text-lg md:w-[100px];
+}
+.skills-link {
+  @apply border border-black rounded-full p-2 block hover:bg-slate-300;
+}

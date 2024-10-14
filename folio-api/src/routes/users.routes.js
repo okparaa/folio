@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var users_controller_1 = require("../controllers/users.controller");
+var express_1 = require("express");
+var userRouter = (0, express_1.Router)();
+var handler = new users_controller_1.UsersController();
+userRouter.post("/signup", function (req, res) { return handler.signup(req, res); });
+userRouter.post("/signin", function (req, res) { return handler.signin(req, res); });
+userRouter.put("/", function (req, res) { return handler.updateUser(req, res); });
+userRouter.get("/", function (req, res) { return handler.getUsers(req, res); });
+userRouter.get("/:id", function (req, res) { return handler.getUser(req, res); });
+exports.default = userRouter;
