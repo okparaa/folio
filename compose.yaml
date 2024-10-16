@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  # web:
+  #   build:
+  #     context: ./web
+  #     dockerfile: web.dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - webnet
+  #   depends_on:
+  #     - api
+
+  db:
+    container_name: db
+    image: postgres:16.4-alpine
+    restart: always
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: intell
+      POSTGRES_DB: folio
+      POSTGRES_USER: okparaa
+    networks:
+      - apinet
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 2s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  api:
+    container_name: api
+    restart: always
+    build:
+      context: ./api
+      dockerfile: api.dockerfile
+    image: api:v1
+    ports:
+      - 3001:3001
+    env_file:
+      - ./api/.env
+    networks:
+      - webnet
+      - apinet
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  webnet:
+    name: webnet
+  apinet:
+    name: apinet
+
+volumes:
+  pgdata:
+    name: pgdata
