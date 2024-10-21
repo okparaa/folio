@@ -1,9 +1,5 @@
 import { Inject } from "../decorators/injector";
-import {
-  RolesPermitsSchema,
-  OldRolesSchema,
-  NewRolesSchema,
-} from "../schemas/roles.schema";
+import { OldRolesSchema, NewRolesSchema } from "../schemas/roles.schema";
 import { RolesService } from "../services/roles.service";
 import { Request, Response } from "express";
 import { RequestQuerySchema } from "../schemas/query.schema";
@@ -100,71 +96,6 @@ export class RolesController {
 
       // Return the updated role
       return res.status(200).json(updatedRole);
-    } catch (error) {
-      return res.status(500).json({
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
-      });
-    }
-  }
-
-  async addRolePermissions(req: Request, res: Response) {
-    try {
-      //validate the request body and request params
-      const result = safeParse(
-        RolesPermitsSchema,
-        { ...req.body, id: req.params.id },
-        { abortPipeEarly: true }
-      );
-
-      //handle validation issues
-      if (result.issues) {
-        return res.status(400).json(flatten(result.issues));
-      }
-
-      //add the permission to the role using the validated input
-      const response = await this.service.addRolePermissions(result.output);
-
-      //if the role for the permisions is not found, return 404
-      if (!response) {
-        return res
-          .status(404)
-          .json({ message: "Added permissions not returned" });
-      }
-      //return the response
-      return res.status(200).json(response);
-    } catch (error) {
-      return res.status(500).json({
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
-      });
-    }
-  }
-
-  async delRolePermisions(req: Request, res: Response) {
-    try {
-      //validate the request body and request params
-      const result = safeParse(
-        RolesPermitsSchema,
-        { ...req.body, id: req.params.id },
-        { abortPipeEarly: true }
-      );
-      //handle the validation issues
-      if (result.issues) {
-        return res.status(400).json(flatten(result.issues));
-      }
-      //delete the permission from the role
-      const response = await this.service.delRolePermissions(result.output);
-
-      //if the role for the permissions is not found, return 404
-      if (!response) {
-        return res
-          .status(404)
-          .json({ message: "Deleted permissions not returned" });
-      }
-
-      //return the response
-      return res.status(200).json(response);
     } catch (error) {
       return res.status(500).json({
         message:

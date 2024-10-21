@@ -1,7 +1,6 @@
 import { boolean, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { InferSelectModel, relations } from "drizzle-orm";
 import { createId } from "../create-id";
-import { sessions } from "./sessions.table";
 
 export const users = pgTable("users", {
   id: varchar("id", { length: 128 })
@@ -21,9 +20,5 @@ export const users = pgTable("users", {
   password: varchar("password", { length: 60 }).notNull(),
   role: varchar("role").default("user").notNull(),
 });
-
-export const userRelation = relations(users, ({ many, one }) => ({
-  session: many(sessions),
-}));
 
 export type Users = InferSelectModel<typeof users>;

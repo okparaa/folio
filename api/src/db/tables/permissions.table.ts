@@ -1,10 +1,10 @@
-import { InferSelectModel, sql } from "drizzle-orm";
+import { InferInsertModel } from "drizzle-orm";
 import { boolean, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createId } from "../create-id";
 
-export const roles = pgTable("roles", {
+export const permissions = pgTable("permissions", {
   id: varchar("id", { length: 128 })
-    .$defaultFn(() => createId("roles"))
+    .$defaultFn(() => createId("permissions"))
     .primaryKey(),
   syn: boolean("syn").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -12,8 +12,8 @@ export const roles = pgTable("roles", {
     .defaultNow()
     .$onUpdate(() => new Date()),
   status: boolean("status").default(true),
-  name: varchar("role").notNull().unique(),
-  description: varchar("description").notNull(),
+  name: varchar("name").notNull().unique(),
+  description: varchar("description"),
 });
 
-export type Roles = InferSelectModel<typeof roles>;
+export type Permissions = InferInsertModel<typeof permissions>;

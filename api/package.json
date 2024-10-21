@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --ignore src/db/create-id/ src/server.ts",
-    "start": "node dist/server.js",
-    "gen": "drizzle-kit generate --dialect=postgresql --schema=src/db/tables/index.ts",
+    "start": "nodemon --ignore src/db/create-id/ src/server.ts",
+    "build": "tsc",
+    "gen": "drizzle-kit generate",
     "mig": "node src/db/migrate.ts",
-    "auth": "ts-node src/db/createAuthFile.ts",
+    "auth": "node src/db/createAuthFile.ts",
     "test": "jest --watchAll --detectOpenHandles"
   },
   "jest": {

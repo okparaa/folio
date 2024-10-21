@@ -17,7 +17,7 @@ afterEach(() => {
 describe("roles service", () => {
   const rolesService = new RolesService();
   const roleMock = roleTD.build();
-  const { id, permissions, ...roleNoId } = roleMock;
+  const { id, ...roleNoId } = roleMock;
   const mockRoles = [...roleTD.buildList(10)];
 
   describe("createRole", () => {
@@ -28,13 +28,13 @@ describe("roles service", () => {
         .mockResolvedValue(roleMock);
 
       const result = await rolesService.createRole({
-        role: roleMock.role,
+        name: roleMock.name,
         description: roleMock.description as string,
       });
 
       expect(result).toEqual(roleMock);
       expect(mockRepo).toHaveBeenCalledWith({
-        role: roleMock.role,
+        name: roleMock.name,
         description: roleMock.description,
       });
     });
@@ -70,14 +70,14 @@ describe("roles service", () => {
       // Mock successful role update
       const mockRepo = jest
         .spyOn(rolesService.repo, "update")
-        .mockResolvedValue({ ...roleMock, role: "users" });
+        .mockResolvedValue({ ...roleMock, name: "users" });
 
       const result = await rolesService.updateRole({
         ...roleMock,
-        role: "users",
+        name: "users",
       });
-      expect(result).toEqual({ ...roleMock, role: "users" });
-      expect(mockRepo).toHaveBeenCalledWith({ ...roleMock, role: "users" });
+      expect(result).toEqual({ ...roleMock, name: "users" });
+      expect(mockRepo).toHaveBeenCalledWith({ ...roleMock, name: "users" });
     });
 
     it("should throw an error when role update fails (missing id)", async () => {
@@ -166,97 +166,6 @@ describe("roles service", () => {
     });
   });
 
-  describe("addRolePermissions", () => {
-    it("should add role permissions when correct info is provided", async () => {
-      // Mock successful addition of role permissions
-      const mockRepo = jest
-        .spyOn(rolesService.repo, "addRolePermissions")
-        .mockResolvedValue(roleMock.permissions);
-
-      const result = await rolesService.addRolePermissions({
-        permissions: roleMock.permissions,
-        roleId: roleMock.id,
-      });
-      expect(result).toEqual(roleMock.permissions);
-      expect(mockRepo).toHaveBeenCalledWith({
-        permissions: roleMock.permissions,
-        roleId: roleMock.id,
-      });
-    });
-
-    it("should throw an error when deletion of existing permissions fails", async () => {
-      // Mock failure in deleting role permissions
-      const mockRepo = jest
-        .spyOn(rolesService, "delRolePermissions")
-        .mockRejectedValue(throwE("Deleting existing permission error"));
-
-      await expect(
-        rolesService.addRolePermissions({
-          permissions: roleMock.permissions,
-          roleId: roleMock.id,
-        })
-      ).rejects.toThrow(throwE("Deleting existing permission error"));
-
-      expect(mockRepo).toHaveBeenCalledWith({
-        permissions: roleMock.permissions,
-        roleId: roleMock.id,
-      });
-    });
-
-    it("should throw an error when adding new permissions fails", async () => {
-      // Mock failure in adding new permissions
-      const mockRepo = jest
-        .spyOn(rolesService.repo, "addRolePermissions")
-        .mockRejectedValue(throwE("Database error"));
-
-      await expect(
-        rolesService.addRolePermissions({
-          permissions: roleMock.permissions,
-          roleId: roleMock.id,
-        })
-      ).rejects.toThrow("Database error");
-
-      expect(mockRepo).toHaveBeenCalled();
-    });
-  });
-
-  describe("delRolePermissions", () => {
-    it("should delete role permissions when correct info is provided", async () => {
-      // Mock successful permission deletion
-      const mockRepo = jest
-        .spyOn(rolesService.repo, "removeRolePermissions")
-        .mockResolvedValue(roleMock.permissions);
-
-      const result = await rolesService.delRolePermissions({
-        permissions: roleMock.permissions,
-        roleId: roleMock.id,
-      });
-      expect(result).toEqual(roleMock.permissions);
-      expect(mockRepo).toHaveBeenCalledWith({
-        permissions: roleMock.permissions,
-        roleId: roleMock.id,
-      });
-    });
-
-    it("should throw an error when deleting permissions fails", async () => {
-      // Mock an error during permission deletion
-      const mockRepo = jest
-        .spyOn(rolesService.repo, "removeRolePermissions")
-        .mockRejectedValue(throwE("Deleting permission error"));
-
-      await expect(
-        rolesService.delRolePermissions({
-          permissions: roleMock.permissions,
-          roleId: roleMock.id,
-        })
-      ).rejects.toThrow("Deleting permission error");
-      expect(mockRepo).toHaveBeenCalledWith({
-        permissions: roleMock.permissions,
-        roleId: roleMock.id,
-      });
-    });
-  });
-
   describe("patchRole", () => {
     it("should update a role when correct info is provided", async () => {
       const mockRepo = jest
@@ -301,7 +210,7 @@ describe("roles service", () => {
         .spyOn(rolesService.repo.db, "execute")
         .mockResolvedValue({ ...response, rows: [], rowCount: 0 });
 
-      const result = await rolesService.notDuplicate(roleMock.role);
+      const result = await rolesService.notDuplicate(roleMock.name);
       expect(result).toBe(true);
       expect(mockRepo).toHaveBeenCalled();
     });
@@ -312,7 +221,7 @@ describe("roles service", () => {
         .spyOn(rolesService.repo.db, "execute")
         .mockResolvedValue({ ...response, rows: [{}], rowCount: 1 });
 
-      const result = await rolesService.notDuplicate(roleMock.role);
+      const result = await rolesService.notDuplicate(roleMock.name);
       expect(result).toBe(false);
       expect(mockRepo).toHaveBeenCalled();
     });
@@ -323,7 +232,7 @@ describe("roles service", () => {
         .spyOn(rolesService.repo.db, "execute")
         .mockRejectedValue(throwE("Database error"));
 
-      await expect(rolesService.notDuplicate(roleMock.role)).rejects.toThrow(
+      await expect(rolesService.notDuplicate(roleMock.name)).rejects.toThrow(
         "Database error"
       );
       expect(mockRepo).toHaveBeenCalled();
@@ -343,7 +252,7 @@ describe("roles service", () => {
 
       const result = await rolesService.isSameRole({
         id: roleMock.id,
-        role: roleMock.role,
+        name: roleMock.name,
       });
       expect(result).toBe(true);
       expect(mockRepo).toHaveBeenCalled();
@@ -361,7 +270,7 @@ describe("roles service", () => {
 
       const result = await rolesService.isSameRole({
         id: roleMock.id,
-        role: roleMock.role,
+        name: roleMock.name,
       });
       expect(result).toBe(false);
       expect(mockRepo).toHaveBeenCalled();
@@ -375,7 +284,7 @@ describe("roles service", () => {
 
       const result = await rolesService.isSameRole({
         id: roleMock.id,
-        role: roleMock.role,
+        name: roleMock.name,
       });
       expect(result).toBe(true);
       expect(mockRepo).toHaveBeenCalled();
@@ -388,7 +297,7 @@ describe("roles service", () => {
         .mockRejectedValue(throwE("Database error"));
 
       await expect(
-        rolesService.isSameRole({ id: roleMock.id, role: roleMock.role })
+        rolesService.isSameRole({ id: roleMock.id, name: roleMock.name })
       ).rejects.toThrow("Database error");
       expect(mockRepo).toHaveBeenCalled();
     });

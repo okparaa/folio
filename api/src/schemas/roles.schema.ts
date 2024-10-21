@@ -4,7 +4,7 @@ import { RolesService } from "../services/roles.service";
 const rolesService = new RolesService();
 
 export const NewRolesSchema = v.objectAsync({
-  role: v.pipeAsync(
+  name: v.pipeAsync(
     v.string("should be string"),
     v.maxLength(12, "roles name too long"),
     v.nonEmpty("roles desc empty"),
@@ -22,7 +22,7 @@ export const NewRolesSchema = v.objectAsync({
 export const OldRolesSchema = v.pipeAsync(
   v.object({
     id: v.string(),
-    role: v.pipe(
+    name: v.pipe(
       v.string("should be string"),
       v.maxLength(12, "role too long"),
       v.nonEmpty("role desc empty")
@@ -31,16 +31,11 @@ export const OldRolesSchema = v.pipeAsync(
     type: v.optional(v.number(), 1),
   }),
   v.forwardAsync(
-    v.partialCheckAsync([["role"], ["id"]], async (input) => {
+    v.partialCheckAsync([["name"], ["id"]], async (input) => {
       return (await rolesService.isSameRole(input)) as boolean;
     }),
-    ["role"]
+    ["name"]
   )
 );
-
-export const RolesPermitsSchema = v.object({
-  roleId: v.string(),
-  permissions: v.array(v.string("should be string"), "array is required"),
-});
 
 export type ReqInfo = { path: string; baseUrl: string; method: string };

@@ -7,7 +7,6 @@ import {
   NewRolesSchema,
   OldRolesSchema,
   ReqInfo,
-  RolesPermitsSchema,
 } from "../schemas/roles.schema";
 import { InferInput } from "valibot";
 import { throwErr } from "../utils/error.utils";
@@ -69,32 +68,6 @@ export class RolesService {
     }
   }
 
-  async addRolePermissions(data: InferInput<typeof RolesPermitsSchema>) {
-    try {
-      // First, delete exsting role permissions
-      await this.delRolePermissions(data);
-
-      // Then, add new rol permissions
-      return (await this.repo.addRolePermissions(data)) as Roles["permissions"];
-    } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the roles"
-      );
-    }
-  }
-
-  async delRolePermissions(data: InferInput<typeof RolesPermitsSchema>) {
-    try {
-      return await this.repo.removeRolePermissions(data);
-    } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the roles"
-      );
-    }
-  }
-
   async patchRole(data: InferInput<typeof OldRolesSchema>) {
     try {
       const role = (await this.repo.update(data)) as Roles;
@@ -124,10 +97,10 @@ export class RolesService {
     }
   }
 
-  async isSameRole(input: { id: string; role: string }) {
+  async isSameRole(input: { id: string; name: string }) {
     try {
       const result = await this.repo.db.execute(
-        sql`SELECT * FROM ${this.repo.table} WHERE name = ${input.role}`
+        sql`SELECT * FROM ${this.repo.table} WHERE name = ${input.name}`
       );
 
       if (result.rowCount && result.rows[0].id !== input.id) {

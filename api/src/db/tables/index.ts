@@ -5,3 +5,6 @@ export * from "./roles.table";
 export * from "./sessions.table";
 export * from "./contents.table";
 export * from "./routes.table";
+export * from "./user_roles.table";
+export * from "./permissions.table";
+export * from "./role_permissions.table";

@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # web:
   #   build:
@@ -17,20 +15,16 @@ services:
     image: postgres:16.4-alpine
     restart: always
     volumes:
-      - ./initdb:/docker-entrypoint-initdb.d
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: intell
-      POSTGRES_DB: folio
-      POSTGRES_USER: okparaa
+      - pgdata:/var/lib/postgresql/data:delegated
+    env_file:
+      - ./api/.env
     networks:
       - apinet
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
-      interval: 2s
-      timeout: 10s
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 30s
 
   api:
     container_name: api
@@ -38,14 +32,18 @@ services:
     build:
       context: ./api
       dockerfile: api.dockerfile
+      target: ${NODE_ENV}
     image: api:v1
     ports:
-      - 3001:3001
+      - 3000:3000
+      - 9229:9229
     env_file:
       - ./api/.env
     networks:
       - webnet
       - apinet
+    volumes:
+      - ./api/src:/api/src
     depends_on:
       db:
         condition: service_healthy

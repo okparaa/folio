@@ -4,7 +4,11 @@ import { User } from "../../schemas/users.schema";
 declare global {
   namespace Express {
     export interface Request {
-      user: User;
+      user: {
+        roles: Array<string>;
+        permissions: Record<string, string>;
+        id: string;
+      };
     }
   }
   namespace NodeJS {

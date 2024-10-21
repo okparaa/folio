@@ -1,7 +1,4 @@
-./node-modules
-./drizzle
 npm-debug.log
-.dockerfile
-./dataset
 .dockerignore
 client.rest
+*/node_modules

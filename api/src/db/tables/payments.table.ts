@@ -21,4 +21,3 @@ export const payments = pgTable("payments", {
 });
 
 export type PaymentsSelect = InferSelectModel<typeof payments>;
-export type PaymentsInsert = InferInsertModel<typeof payments>;

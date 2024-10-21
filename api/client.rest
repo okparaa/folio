@@ -1,1 +1,18 @@
-GET http://localhost:5100/users
+# sign in
+POST  http://localhost:3000/users/signup
+Content-Type: application/json
+
+{
+  "username": "okparaia@gmail.com",
+  "password": "intell",
+  "surname": "okpara",
+  "firstname": "ifeanyi",
+  "phone": "0803785763",
+  "pass": "intell",
+  "lastname": "ambrose"
+}
+
+# get users
+GET  http://localhost:3000/users
+Content-Type: application/json
+

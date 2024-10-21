@@ -1,20 +1,35 @@
-FROM node:20-alpine
-
-RUN addgroup api && adduser -S -G api api
-
+# Base image for both development and production
+FROM node:18-alpine AS base
 WORKDIR /api
+EXPOSE 3000
 
+# Install dependencies
 COPY package*.json ./
 
+# Only install production dependencies for the production build
+FROM base AS production
+
+# Copy source code to the app directory
 COPY . .
 
-RUN npm install \
-    && npm install typescript -g \
-    && tsc \
-    && npm run gen
+RUN npm install && \
+    npm install typescript -g && \
+    tsc && \
+    npx drizzle-kit generate && chmod +x prod.start.sh
 
-USER api 
+# Run the application in production
+ENTRYPOINT [ "/api/prod.start.sh" ]
 
-EXPOSE 3001
+# Install development dependencies and tools for dev builds
+FROM base AS development
 
-CMD [ "npm", "start" ]
+# Copy the entire source code for development
+COPY . .
+
+RUN npm install
+
+# Install Drizzle client and other dev dependencies
+RUN npx drizzle-kit generate && chmod +x dev.start.sh
+
+# Default command for development
+ENTRYPOINT [ "/api/dev.start.sh" ]
