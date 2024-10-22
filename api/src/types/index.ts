@@ -12,3 +12,7 @@ export type OptionalWith<T, K extends keyof T> = Omit<T, K> & {
   [P in K]?: T[P];
 };
 export type VResult = { issues: any; output: any };
+
+export interface HTTPError extends Error {
+  statusCode: number;
+}

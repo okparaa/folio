@@ -1,4 +1,7 @@
-npm-debug.log
 .dockerignore
 client.rest
-*/node_modules
+node_modules
+.gitignore
+.git
+dist
+*.md

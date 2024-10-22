@@ -1,11 +1,12 @@
 import { Repository } from ".";
 import { sql } from "drizzle-orm";
-import { throwErr } from "../utils/error.utils";
+import { NotProvidedException } from "../exceptions/notProvided.exception";
+import { ExpectationFailedException } from "../exceptions/expectationFailed.exception";
 
 export class RolePermissionsRepository extends Repository {
   async getUserRolePermissions(userId: string) {
     if (!userId) {
-      return throwErr("user id is required");
+      throw new NotProvidedException("user id is required");
     }
 
     try {
@@ -21,10 +22,7 @@ export class RolePermissionsRepository extends Repository {
 
       return result.rows;
     } catch (error) {
-      throw new Error(
-        (error as Error).message ||
-          "An error occurred while retrieving the role permissions"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 }

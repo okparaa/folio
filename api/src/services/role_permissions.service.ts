@@ -1,7 +1,7 @@
 import { Inject } from "../decorators/injector";
-import { throwErr } from "../utils/error.utils";
 import { RolePermissionsRepository } from "../repository/role_permissions.repository";
 import { rolePermissions } from "../db/tables";
+import { NotFoundException } from "../exceptions/notFound.exception";
 
 export class RolePermissionService {
   @Inject(RolePermissionsRepository, rolePermissions)
@@ -9,7 +9,7 @@ export class RolePermissionService {
   async getUserRolePermissions(userId: string) {
     const response = await this.repo.getUserRolePermissions(userId);
     if (!response) {
-      return throwErr("unable to retrieve permissions");
+      throw new NotFoundException("unable to retrieve permissions");
     }
     return response;
   }

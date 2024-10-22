@@ -1,11 +1,14 @@
 import { sql } from "drizzle-orm";
 import { Repository } from ".";
-import { throwErr } from "../utils/error.utils";
+import { NotProvidedException } from "../exceptions/notProvided.exception";
+import { NotFoundException } from "../exceptions/notFound.exception";
+import { Users } from "../db/tables";
+import { ExpectationFailedException } from "../exceptions/expectationFailed.exception";
 
 export class UsersRepository extends Repository {
   async getUserByUsername(username: string) {
     if (!username) {
-      return throwErr("Username is required");
+      throw new NotProvidedException("Username is required");
     }
 
     try {
@@ -14,15 +17,12 @@ export class UsersRepository extends Repository {
       );
 
       if (result.rowCount === 0) {
-        return throwErr("User not found");
+        throw new NotFoundException("User not found");
       }
 
-      return result.rows[0];
+      return result.rows[0] as Users;
     } catch (error) {
-      throw new Error(
-        (error as Error).message ||
-          "An error occurred while retrieving the user"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 }

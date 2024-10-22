@@ -3,7 +3,6 @@ import expressApp from "./expressApp";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
-const mode = process.env.NODE_ENV || "unknown";
 
 export const StartServer = async () => {
   expressApp.listen(PORT, () => {
@@ -16,5 +15,5 @@ export const StartServer = async () => {
 };
 
 StartServer().then(() => {
-  console.log(`${mode} server up!`);
+  console.log(`server up!`);
 });

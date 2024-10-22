@@ -1,11 +1,13 @@
 import { Repository } from ".";
 import { sql } from "drizzle-orm";
-import { throwErr } from "../utils/error.utils";
+import { NotProvidedException } from "../exceptions/notProvided.exception";
+import { NotFoundException } from "../exceptions/notFound.exception";
+import { ExpectationFailedException } from "../exceptions/expectationFailed.exception";
 
 export class UserRolesRepository extends Repository {
   async getUserRoles(userId: string) {
     if (!userId) {
-      return throwErr("id is required");
+      throw new NotProvidedException("id is required");
     }
 
     try {
@@ -14,15 +16,12 @@ export class UserRolesRepository extends Repository {
       );
 
       if (result.rowCount === 0) {
-        return throwErr("role name not found");
+        throw new NotFoundException("role name not found");
       }
 
       return result.rows;
     } catch (error) {
-      throw new Error(
-        (error as Error).message ||
-          "An error occurred while retrieving the role names"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 }

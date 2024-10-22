@@ -9,7 +9,10 @@ import {
   ReqInfo,
 } from "../schemas/roles.schema";
 import { InferInput } from "valibot";
-import { throwErr } from "../utils/error.utils";
+import { NotCreatedException } from "../exceptions/notCreated.exception";
+import { ExpectationFailedException } from "../exceptions/expectationFailed.exception";
+import { NotUpdatedException } from "../exceptions/notUpdated.exception";
+import { NotFoundException } from "../exceptions/notFound.exception";
 
 export class RolesService {
   @Inject(RolesRepository, roles) repo: RolesRepository;
@@ -17,14 +20,11 @@ export class RolesService {
     try {
       const result = (await this.repo.create(data)) as Roles;
       if (!result || !result.id) {
-        return throwErr("Could not create role");
+        throw new NotCreatedException("Could not create role");
       }
       return result;
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while creating the role"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 
@@ -32,14 +32,11 @@ export class RolesService {
     try {
       const result = (await this.repo.update(data)) as Roles;
       if (!result || !result.id) {
-        return throwErr("Could not update role");
+        throw new NotUpdatedException("Could not update role");
       }
       return result;
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while updating the role"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 
@@ -47,24 +44,18 @@ export class RolesService {
     try {
       return await this.repo.find(limit, offset);
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the roles"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
   async getRole(id: string) {
     try {
       const role = await this.repo.findOne(id);
       if (!role) {
-        return throwErr(`Role with id ${id} not found`);
+        throw new NotFoundException(`Role with id ${id} not found`);
       }
       return role;
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the role"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 
@@ -72,14 +63,13 @@ export class RolesService {
     try {
       const role = (await this.repo.update(data)) as Roles;
       if (!role || !role.id) {
-        return throwErr(`Failed to update role with id ${data.id}`);
+        throw new NotUpdatedException(
+          `Failed to update role with id ${data.id}`
+        );
       }
       return role;
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the roles"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 
@@ -90,10 +80,7 @@ export class RolesService {
       );
       return result.rowCount == 0 ? true : false;
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the roles"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 
@@ -108,10 +95,7 @@ export class RolesService {
       }
       return true;
     } catch (error) {
-      return throwErr(
-        (error as Error).message ||
-          "An unexpected error occurred while getting the roles"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 
@@ -134,10 +118,7 @@ export class RolesService {
 
       return true; // Assuming you'll add permission validation logic here
     } catch (error) {
-      throw new Error(
-        (error as Error).message ||
-          "An unexpected error occurred while processing permissions"
-      );
+      throw new ExpectationFailedException((error as Error).message);
     }
   }
 }

@@ -3,15 +3,16 @@ import { Routes, routes } from "../db/tables";
 import { Inject } from "../decorators/injector";
 import { RoutesRepository } from "../repository/routes.repository";
 import { InferInput } from "valibot";
-import { throwErr } from "../utils/error.utils";
 import { NewRoutesSchema, OldRoutesSchema } from "../schemas/routes.schema";
+import { NotCreatedException } from "../exceptions/notCreated.exception";
+import { NotUpdatedException } from "../exceptions/notUpdated.exception";
 
 export class RoutesService {
   @Inject(RoutesRepository, routes) repo: RoutesRepository;
   async createRoute(data: InferInput<typeof NewRoutesSchema>) {
     const route = (await this.repo.create(data)) as Routes;
     if (!route.id) {
-      return throwErr("could not create route");
+      throw new NotCreatedException("could not create route");
     }
     return route;
   }
@@ -24,7 +25,7 @@ export class RoutesService {
   async updateRoute(data: InferInput<typeof OldRoutesSchema>) {
     const route = (await this.repo.update(data)) as Routes;
     if (!route.id) {
-      return throwErr("could not update route");
+      throw new NotUpdatedException("could not update route");
     }
     return route;
   }
